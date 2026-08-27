@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ENGINEERING &amp; Optimizer — Role Training Matrix</title>
+<title>INNERGY Engineering - Training Matrix</title>
 <style>
   :root{
     --dark:#333345;
@@ -226,7 +226,6 @@
     <img id="logoImg" src="" alt="INNERGY">
     <div class="topbar-actions">
       <button class="icon-btn" id="themeToggle">🌙 Dark mode</button>
-      <button class="icon-btn" id="downloadBtn">⬇ Download page</button>
       <button class="menu-toggle" id="menuToggle">Sections ▾</button>
     </div>
   </div>
@@ -611,29 +610,6 @@ window.suggestViaGithub = function(id){
   window.open(issueUrl, '_blank');
 };
 
-function updateDownloadHint(){
-  const btn = document.getElementById('downloadBtn');
-  btn.textContent = '⬇ Download snapshot';
-  btn.title = 'Saves an offline copy of the page as it looks right now, including all published links.';
-}
-
-// ---------- Export a self-contained copy with any added links baked in ----------
-document.getElementById('downloadBtn').addEventListener('click', () => {
-  document.querySelectorAll('.add-link-form').forEach(f => f.style.display = 'none');
-  document.querySelectorAll('.add-link-btn').forEach(b => b.style.display = 'inline-block');
-  document.getElementById('matrix-data').textContent = JSON.stringify(MATRIX);
-  const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-  const blob = new Blob([htmlContent], { type: 'text/html' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'ENGINEERING-Optimizer_Role_Training_Matrix.html';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-});
-
 // ---------- Light / dark mode ----------
 function applyTheme(theme){
   document.documentElement.setAttribute('data-theme', theme);
@@ -653,7 +629,6 @@ document.getElementById('themeToggle').addEventListener('click', () => {
 // ---------- Startup ----------
 (async function start(){
   renderAll();          // render immediately with the built-in curated links
-  updateDownloadHint();
   await loadPublishedLinks();  // then fetch anything the team has published
   renderDomains();       // re-render with published links merged in
 })();

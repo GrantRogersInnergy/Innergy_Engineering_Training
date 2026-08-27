@@ -1,1 +1,10 @@
-{}
+{
+  "B01": [
+    {
+      "label": "test",
+      "url": "http://www.google.com",
+      "addedBy": "test",
+      "addedAt": "2026-08-27T18:09:02.867Z"
+    }
+  ]
+}

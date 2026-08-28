@@ -58,6 +58,8 @@
   }
   .topbar-row{ display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap; }
   .topbar img{ height:32px; display:block; }
+  .brand-group{ display:flex; align-items:baseline; gap:6px; }
+  .page-version{ color:rgba(255,255,255,0.45); font-size:10.5px; font-weight:600; letter-spacing:0.03em; }
   .menu-toggle{
     display:none; background:none; border:1px solid #55556e; color:#fff;
     border-radius:8px; padding:8px 12px; cursor:pointer; font-size:14px;
@@ -229,7 +231,10 @@
 
 <div class="topbar">
   <div class="topbar-row">
-    <img id="logoImg" src="" alt="INNERGY">
+    <div class="brand-group">
+      <img id="logoImg" src="" alt="INNERGY">
+      <span class="page-version" title="Page version">v1.5.0</span>
+    </div>
     <div class="topbar-actions">
       <button class="icon-btn" id="themeToggle">🌙 Dark mode</button>
       <button class="menu-toggle" id="menuToggle">Sections ▾</button>

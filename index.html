@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>INNERGY Engineering - Training Matrix</title>
+<title>INNERGY Engineering - Training Sources</title>
 <style>
   :root{
     --dark:#333345;
@@ -109,15 +109,17 @@
   /* ---------- Hero ---------- */
   .hero{
     background:linear-gradient(135deg, var(--grad-start), var(--grad-end));
-    border-radius:18px; color:#fff; padding:34px 38px; margin-bottom:34px; position:relative; overflow:hidden;
+    border-radius:12px; color:#fff; padding:12px 18px; margin-bottom:18px; position:relative; overflow:hidden;
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
   }
-  .hero::after{ content:""; position:absolute; right:-60px; top:-60px; width:260px; height:260px; background:radial-gradient(circle, rgba(255,255,255,0.14), transparent 70%); }
-  .hero h1{ color:#fff; font-size:28px; margin-bottom:8px; }
-  .hero p{ color:rgba(255,255,255,0.92); max-width:680px; font-size:14.5px; line-height:1.55; margin:0 0 18px 0; }
-  .stat-row{ display:flex; gap:14px; flex-wrap:wrap; }
-  .stat{ background:rgba(255,255,255,0.14); border:1px solid rgba(255,255,255,0.25); border-radius:12px; padding:12px 18px; min-width:120px; }
-  .stat .num{ font-size:24px; font-weight:700; font-family:"Brandon Grotesque",sans-serif; }
-  .stat .lbl{ font-size:11px; opacity:0.9; letter-spacing:0.03em; }
+  .hero::after{ content:""; position:absolute; right:-40px; top:-40px; width:140px; height:140px; background:radial-gradient(circle, rgba(255,255,255,0.14), transparent 70%); }
+  .hero-text{ min-width:0; }
+  .hero h1{ color:#fff; font-size:15px; margin:0; line-height:1.3; }
+  .hero p{ color:rgba(255,255,255,0.85); max-width:560px; font-size:11px; line-height:1.4; margin:2px 0 0 0; }
+  .stat-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .stat{ background:rgba(255,255,255,0.14); border:1px solid rgba(255,255,255,0.25); border-radius:8px; padding:5px 10px; min-width:0; }
+  .stat .num{ font-size:14px; font-weight:700; font-family:"Brandon Grotesque",sans-serif; line-height:1.2; }
+  .stat .lbl{ font-size:9px; opacity:0.85; letter-spacing:0.02em; }
 
   /* ---------- Legend / code key ---------- */
   .key-panel{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px 26px; margin-bottom:34px; }
@@ -191,6 +193,32 @@
   .delete-link-btn:hover{ color:#c0392b; }
   .upload-divider{ font-size:10px; color:var(--ink-soft); text-align:center; margin:2px 0; }
 
+  /* ---------- General notes ---------- */
+  .notes-add{ display:flex; gap:8px; align-items:flex-start; margin:14px 0 18px 0; flex-wrap:wrap; }
+  .notes-add textarea{
+    flex:1 1 320px; min-height:44px; max-height:160px; resize:vertical; font-size:13px; padding:9px 12px;
+    border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--ink); font-family:inherit;
+  }
+  .notes-add input[type="text"]{
+    flex:0 1 180px; font-size:13px; padding:9px 12px; border:1px solid var(--line); border-radius:8px;
+    background:var(--card); color:var(--ink); font-family:inherit;
+  }
+  .note-add-btn{
+    flex:none; width:38px; height:38px; border-radius:8px; border:none; background:var(--orange); color:#fff;
+    font-size:19px; font-weight:700; cursor:pointer; line-height:1;
+  }
+  .note-add-btn:hover{ opacity:0.9; }
+  .notes-list{ display:flex; flex-direction:column; gap:8px; }
+  .note-item{
+    display:flex; align-items:flex-start; gap:10px; background:var(--card); border:1px solid var(--line);
+    border-radius:10px; padding:12px 14px;
+  }
+  .note-item .note-body{ flex:1; font-size:13px; line-height:1.55; color:var(--ink); white-space:pre-wrap; }
+  .note-item .note-meta{ font-size:11px; color:var(--ink-soft); margin-top:4px; }
+  .note-delete-btn{ flex:none; background:none; border:none; color:var(--ink-soft); cursor:pointer; font-size:13px; padding:2px 4px; line-height:1; }
+  .note-delete-btn:hover{ color:#c0392b; }
+  .notes-empty{ color:var(--ink-soft); font-style:italic; font-size:12.5px; }
+
   .callout{ background:var(--card); border:1px solid var(--line); border-left:4px solid var(--orange); border-radius:10px; padding:16px 20px; font-size:13.5px; line-height:1.6; color:var(--ink); margin-top:16px; }
   .callout strong{ color:var(--dark); }
   .callout.dark{ background:var(--dark); color:#eceaf5; border-left-color:var(--tint-fg); }
@@ -223,7 +251,7 @@
     .menu-toggle{ display:inline-block; }
     main{ padding:24px 18px 70px 18px; }
     .comp-table{ display:block; overflow-x:auto; }
-    .hero{ padding:26px 22px; }
+    .hero{ padding:10px 14px; }
   }
 </style>
 </head>
@@ -233,9 +261,9 @@
   <div class="topbar-row">
     <div class="brand-group">
       <img id="logoImg" src="" alt="INNERGY">
-      <span class="page-version" title="Page version">v1.5.0</span>
     </div>
     <div class="topbar-actions">
+      <span class="page-version" title="Page version">v1.6.0</span>
       <button class="icon-btn" id="themeToggle">🌙 Dark mode</button>
       <button class="menu-toggle" id="menuToggle">Sections ▾</button>
     </div>
@@ -268,8 +296,8 @@
       <a href="#d-J">J · Customer-Facing Practice</a>
     </div>
     <div class="navgroup">
-      <div class="navgroup-title">Where to learn</div>
-      <a href="#sources">All sources</a>
+      <div class="navgroup-title">Notes</div>
+      <a href="#notes">General notes</a>
     </div>
   </nav>
 
@@ -277,12 +305,14 @@
 
     <section id="overview">
       <div class="hero">
-        <h1 id="heroTitle">Role Training Matrix</h1>
-        <p id="heroSub">What each role owns across ENGINEERING &amp; Optimizer, cross-referenced against the live INNERGY Help Center and peAk course catalog.</p>
+        <div class="hero-text">
+          <h1 id="heroTitle">Role Training Matrix</h1>
+          <p id="heroSub">What each role owns across ENGINEERING &amp; Optimizer, cross-referenced against the live INNERGY Help Center and peAk course catalog.</p>
+        </div>
         <div class="stat-row" id="statRow"></div>
       </div>
       <div class="callout">
-        <strong>Missing a resource?</strong> Click "+ add link" next to any competency, paste it in, and hit "Publish link" — it's saved to the shared page instantly and everyone who opens this URL will see it, no download or re-upload needed. Prefer a review step first? Use "Suggest a GitHub issue" instead.
+        <strong>Missing a resource?</strong> Click "+ add link or document" next to any competency, fill it in, and hit "Publish link" — it's saved to the shared page instantly and everyone who opens this URL will see it, no download or re-upload needed.
       </div>
     </section>
 
@@ -327,52 +357,15 @@
 
     <div id="domains"><!-- domain sections injected by JS --></div>
 
-    <section id="sources">
-      <div class="section-head"><h2>All sources</h2><span class="count">35 working links used across this page</span></div>
-      <p class="section-note">Every curated link cited anywhere in the matrix above, in one place — grouped by type, in competency order.</p>
-
-      <h3 style="margin-top:10px; font-size:16px;">INNERGY Help Center — Articles (34)</h3>
-      <div class="course-list">
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">A03</span><a href="https://support.innergy.com/en/articles/16595935-getting-started-with-the-optimizer" target="_blank">Getting Started with the Optimizer ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">B02</span><a href="https://support.innergy.com/en/articles/16450660-creating-model-spaces-new" target="_blank">Creating Model Spaces – NEW ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">B02</span><a href="https://support.innergy.com/en/articles/15388769-creating-model-spaces" target="_blank">Creating Model Spaces ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">B03</span><a href="https://support.innergy.com/en/articles/15388786-placing-a-wall-in-the-model-space" target="_blank">Placing a Wall in the Model Space ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">B05</span><a href="https://support.innergy.com/en/articles/15388797-placing-products-on-a-wall" target="_blank">Placing Products on a Wall ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">B05</span><a href="https://support.innergy.com/en/articles/15650342-saving-and-updating-products-in-the-library" target="_blank">Saving and Updating Products in the Library ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">B06</span><a href="https://support.innergy.com/en/articles/15650287-working-with-product-faces" target="_blank">Working with Product Faces ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">B07</span><a href="https://support.innergy.com/en/articles/15650299-interior-sectioning" target="_blank">Interior Sectioning ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">B07</span><a href="https://support.innergy.com/en/articles/15650322-exterior-sectioning" target="_blank">Exterior Sectioning ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">C01</span><a href="https://support.innergy.com/en/articles/15388757-customizing-saving-and-updating-the-workspace" target="_blank">Customizing, Saving, and Updating the Workspace ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">C02</span><a href="https://support.innergy.com/en/articles/15332437-applying-design-properties-to-materials" target="_blank">Applying ENGINEERING Properties to Materials ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">C03</span><a href="https://support.innergy.com/en/articles/15650177-defining-connector-materials" target="_blank">Defining Connector Materials ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">C03</span><a href="https://support.innergy.com/en/articles/15650205-manually-placed-hardware" target="_blank">Manually Placed Hardware ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">C04</span><a href="https://support.innergy.com/en/articles/15332319-creating-part-schedules-and-using-subtypes" target="_blank">Creating Part Schedules and Using Subtypes ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">C06</span><a href="https://support.innergy.com/en/articles/15332415-creating-and-managing-joinery-methods" target="_blank">Creating and Managing Joinery Methods ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">C07</span><a href="https://support.innergy.com/en/articles/15332381-creating-and-updating-construction-schedules" target="_blank">Creating and Updating Construction Schedules ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">C08</span><a href="https://support.innergy.com/en/articles/15332360-creating-and-updating-material-schedules" target="_blank">Creating and Updating Material Schedules ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">C09</span><a href="https://support.innergy.com/en/articles/15650194-connector-cam-operations" target="_blank">Connector CAM Operations ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">C11</span><a href="https://support.innergy.com/en/articles/15650281-working-with-hatches" target="_blank">Working with Hatches ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">D01</span><a href="https://support.innergy.com/en/articles/15650115-creating-a-sheet" target="_blank">Creating a Sheet ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">D01</span><a href="https://support.innergy.com/en/articles/15650147-creating-importing-a-title-block" target="_blank">Creating / Importing a Title Block ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">D02</span><a href="https://support.innergy.com/en/articles/15650154-creating-a-scene" target="_blank">Creating a Scene ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">D02</span><a href="https://support.innergy.com/en/articles/15650157-placing-scenes-on-sheets" target="_blank">Placing Scenes on Sheets ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">D03</span><a href="https://support.innergy.com/en/articles/15650232-annotation-mode" target="_blank">Annotation Mode ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">D03</span><a href="https://support.innergy.com/en/articles/15650273-model-space-vs-sheet-annotations" target="_blank">Model Space vs. Sheet Annotations ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">D04</span><a href="https://support.innergy.com/en/articles/15650268-automatic-annotations" target="_blank">Automatic Annotations ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">D05</span><a href="https://support.innergy.com/en/articles/15650165-printing-to-pdf" target="_blank">Printing to PDF ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">E01</span><a href="https://support.innergy.com/en/articles/16595940-sending-a-model-space-to-the-optimizer" target="_blank">Sending a Model Space to the Optimizer ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">E02</span><a href="https://support.innergy.com/en/articles/16595952-reviewing-and-editing-parts" target="_blank">Reviewing and Editing Parts ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">E02</span><a href="https://support.innergy.com/en/articles/16595957-reviewing-and-editing-materials" target="_blank">Reviewing and Editing Materials ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">E04</span><a href="https://support.innergy.com/en/articles/16595966-running-an-optimization" target="_blank">Running an Optimization ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">E05</span><a href="https://support.innergy.com/en/articles/16595972-reading-the-nest-layout" target="_blank">Reading the Nest Layout ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">E07</span><a href="https://support.innergy.com/en/articles/16595978-generating-machine-code" target="_blank">Generating Machine Code ↗</a></div></div>
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">F01</span><a href="https://support.innergy.com/en/articles/16595962-understanding-processing-station-types" target="_blank">Understanding Processing Station Types ↗</a></div></div>
+    <section id="notes">
+      <div class="section-head"><h2>General notes</h2><span class="count" id="notesCount"></span></div>
+      <p class="section-note">Anything that doesn't belong to one competency — process notes, gotchas, reminders. Visible to everyone who opens this page.</p>
+      <div class="notes-add">
+        <textarea id="noteInput" placeholder="Add a note or comment..."></textarea>
+        <input type="text" id="noteAuthorInput" placeholder="Your name (optional)">
+        <button id="noteAddBtn" class="note-add-btn" title="Add note">+</button>
       </div>
-
-      <h3 style="margin-top:24px; font-size:16px;">INNERGY Help Center — Collections (1)</h3>
-      <div class="course-list">
-        <div class="course-row"><div class="dot"></div><div class="name"><span class="id-chip" style="margin-right:8px;">J07</span><a href="https://support.innergy.com/en/collections/19652668-innergy-engineering" target="_blank">INNERGY Help Center ↗</a></div></div>
-      </div>
+      <div id="notesList" class="notes-list"></div>
     </section>
 
   </main>
@@ -407,6 +400,89 @@ async function loadPublishedLinks(){
     });
   }catch(e){ /* links.json may not exist yet on first deploy — fine */ }
 }
+
+// ---------- General notes ----------
+let NOTES = [];
+
+async function loadNotes(){
+  try{
+    const res = await fetch('./notes.json', { cache: 'no-store' });
+    if (!res.ok) return;
+    NOTES = await res.json();
+  }catch(e){ /* notes.json may not exist yet — fine */ }
+}
+
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderNotes(){
+  const list = document.getElementById('notesList');
+  const count = document.getElementById('notesCount');
+  count.textContent = NOTES.length ? `${NOTES.length} note${NOTES.length === 1 ? '' : 's'}` : '';
+  if (!NOTES.length) {
+    list.innerHTML = '<div class="notes-empty">No notes yet — add the first one below.</div>';
+    return;
+  }
+  list.innerHTML = NOTES.slice().reverse().map(n => `
+    <div class="note-item">
+      <div>
+        <div class="note-body">${escHtml(n.text)}</div>
+        <div class="note-meta">${n.addedBy && n.addedBy !== 'anonymous' ? escHtml(n.addedBy) + ' · ' : ''}${new Date(n.addedAt).toLocaleString()}</div>
+      </div>
+      <button class="note-delete-btn" title="Delete this note" onclick="deleteNote('${n.entryId}')">✕</button>
+    </div>`).join('');
+}
+
+window.addNote = async function(){
+  const input = document.getElementById('noteInput');
+  const authorInput = document.getElementById('noteAuthorInput');
+  const text = input.value.trim();
+  if (!text) { alert('Enter a note first.'); return; }
+  const addedBy = authorInput.value.trim();
+  const btn = document.getElementById('noteAddBtn');
+  btn.disabled = true;
+  try {
+    const res = await fetch(LINKS_API_URL + '/notes/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, addedBy }),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || ('Request failed: ' + res.status));
+    }
+    const { entry } = await res.json();
+    NOTES.push(entry);
+    input.value = '';
+    renderNotes();
+  } catch (e) {
+    alert('Could not add note right now (' + e.message + ').');
+  } finally {
+    btn.disabled = false;
+  }
+};
+
+window.deleteNote = async function(entryId){
+  if (!confirm('Delete this note?')) return;
+  try {
+    const res = await fetch(LINKS_API_URL + '/notes/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ entryId }),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || ('Request failed: ' + res.status));
+    }
+    NOTES = NOTES.filter(n => n.entryId !== entryId);
+    renderNotes();
+  } catch (e) {
+    alert('Could not delete note right now (' + e.message + ').');
+  }
+};
+
+document.getElementById('noteAddBtn').addEventListener('click', addNote);
 
 const DOMAIN_ORDER = [
   ['A','Product & Business Context'],
@@ -696,8 +772,11 @@ document.getElementById('themeToggle').addEventListener('click', () => {
 // ---------- Startup ----------
 (async function start(){
   renderAll();          // render immediately with the built-in curated links
+  renderNotes();
   await loadPublishedLinks();  // then fetch anything the team has published
+  await loadNotes();
   renderDomains();       // re-render with published links merged in
+  renderNotes();
 })();
 </script>
 

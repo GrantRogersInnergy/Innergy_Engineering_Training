@@ -7,10 +7,13 @@
  * Open access — anyone with the page URL can add, upload, or delete a link.
  *
  * Endpoints:
- *   POST /add     -> { id, label, url, addedBy } add a URL link
- *   POST /upload  -> { id, label, filename, contentBase64, addedBy } commit a
- *                    file into the repo under uploads/ and add it as a link
- *   POST /delete  -> { id, entryId } remove a link
+ *   POST /add          -> { id, label, url, addedBy } add a URL link
+ *   POST /upload       -> { id, label, filename, contentBase64, addedBy }
+ *                         commit a file into the repo under uploads/ and add
+ *                         it as a link
+ *   POST /delete       -> { id, entryId } remove a link
+ *   POST /notes/add    -> { text, addedBy } add a general note
+ *   POST /notes/delete -> { entryId } remove a general note
  *
  * Required secret: GITHUB_TOKEN (fine-grained PAT scoped to this repo only,
  * Contents: Read and write)
@@ -19,6 +22,7 @@
 const OWNER = 'GrantRogersInnergy';
 const REPO = 'Innergy_Engineering_Training';
 const FILE_PATH = 'links.json';
+const NOTES_FILE_PATH = 'notes.json';
 const UPLOADS_PREFIX = 'uploads';
 const PAGES_BASE = 'https://grantrogersinnergy.github.io/Innergy_Engineering_Training';
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024; // 8MB, comfortably inside GitHub's Contents API limits
@@ -84,6 +88,18 @@ async function loadLinks(env) {
 async function saveLinks(data, sha, message, env) {
   const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
   return ghPutFile(FILE_PATH, content, message, sha, env);
+}
+
+async function loadNotes(env) {
+  const { sha, text } = await ghGetFile(NOTES_FILE_PATH, env);
+  let data = [];
+  try { data = text ? JSON.parse(text) : []; } catch (e) { data = []; }
+  return { sha, data };
+}
+
+async function saveNotes(data, sha, message, env) {
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+  return ghPutFile(NOTES_FILE_PATH, content, message, sha, env);
 }
 
 function sanitizeFilename(name) {
@@ -173,6 +189,40 @@ export default {
           const { sha: fileSha } = await ghGetFile(entry.filePath, env);
           if (fileSha) await ghDeleteFile(entry.filePath, `Delete uploaded doc for ${id} via training matrix page`, fileSha, env);
         }
+        return json({ success: true });
+      }
+
+      if (url.pathname === '/notes/add' && request.method === 'POST') {
+        const body = await request.json().catch(() => null);
+        const { text, addedBy } = body || {};
+        if (typeof text !== 'string' || !text.trim()) {
+          return json({ error: 'Note text is required' }, 400);
+        }
+        const safeAddedBy = String(addedBy || 'anonymous').slice(0, 80);
+        const { sha, data } = await loadNotes(env);
+        const entry = {
+          entryId: crypto.randomUUID(),
+          text: text.trim().slice(0, 2000),
+          addedBy: safeAddedBy,
+          addedAt: new Date().toISOString(),
+        };
+        data.push(entry);
+        await saveNotes(data, sha, `Add note via training matrix page${safeAddedBy !== 'anonymous' ? ` (${safeAddedBy})` : ''}`, env);
+        return json({ success: true, entry });
+      }
+
+      if (url.pathname === '/notes/delete' && request.method === 'POST') {
+        const body = await request.json().catch(() => null);
+        const { entryId } = body || {};
+        if (typeof entryId !== 'string') {
+          return json({ error: 'Missing entryId' }, 400);
+        }
+        const { sha, data } = await loadNotes(env);
+        if (!data.some(e => e.entryId === entryId)) {
+          return json({ error: 'Note not found' }, 404);
+        }
+        const filtered = data.filter(e => e.entryId !== entryId);
+        await saveNotes(filtered, sha, `Delete note via training matrix page`, env);
         return json({ success: true });
       }
 

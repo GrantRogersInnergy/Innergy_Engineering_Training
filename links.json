@@ -7,13 +7,5 @@
       "addedAt": "2026-08-27T18:09:02.867Z"
     }
   ],
-  "A01": [
-    {
-      "entryId": "f648e61a-512e-4ef6-93f8-5e32f0510270",
-      "label": "Verify test",
-      "url": "https://example.com",
-      "addedBy": "Claude verify",
-      "addedAt": "2026-08-28T12:37:52.268Z"
-    }
-  ]
+  "A01": []
 }

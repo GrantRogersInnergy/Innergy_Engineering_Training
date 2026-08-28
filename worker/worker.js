@@ -1,25 +1,20 @@
 /**
- * innergy-training-links worker (v2)
+ * innergy-training-links worker
  *
- * Gated by Microsoft Entra ID (Innergy 365 accounts only). Every request must
- * carry a valid Bearer ID token issued to CLIENT_ID by TENANT_ID; the Worker
- * verifies the token's signature against Microsoft's JWKS before doing
- * anything. Reads and writes both go through here — the frontend never talks
- * to GitHub directly.
+ * Receives requests from the training matrix page and reads/writes
+ * links.json (and uploaded documents) in the GitHub Pages repo, using a
+ * GitHub token stored as a Worker secret (never exposed to the browser).
+ * Open access — anyone with the page URL can add, upload, or delete a link.
  *
  * Endpoints:
- *   GET  /links   -> current links.json content
- *   POST /add     -> { id, label, url } add a URL link
- *   POST /upload  -> { id, label, filename, contentBase64 } commit a file into
- *                    the repo under uploads/ and add it as a link
- *   POST /delete  -> { id, entryId } remove a link, only if the caller's
- *                    email matches the entry's addedByEmail
+ *   POST /add     -> { id, label, url, addedBy } add a URL link
+ *   POST /upload  -> { id, label, filename, contentBase64, addedBy } commit a
+ *                    file into the repo under uploads/ and add it as a link
+ *   POST /delete  -> { id, entryId } remove a link
  *
  * Required secret: GITHUB_TOKEN (fine-grained PAT scoped to this repo only,
  * Contents: Read and write)
  */
-
-import { jwtVerify, createRemoteJWKSet } from 'jose';
 
 const OWNER = 'GrantRogersInnergy';
 const REPO = 'Innergy_Engineering_Training';
@@ -28,19 +23,10 @@ const UPLOADS_PREFIX = 'uploads';
 const PAGES_BASE = 'https://grantrogersinnergy.github.io/Innergy_Engineering_Training';
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024; // 8MB, comfortably inside GitHub's Contents API limits
 
-// --- Fill these in from the Entra ID app registration ---
-const TENANT_ID = 'REPLACE_WITH_TENANT_ID';
-const CLIENT_ID = 'REPLACE_WITH_CLIENT_ID';
-// ----------------------------------------------------------
-
-const JWKS = createRemoteJWKSet(
-  new URL(`https://login.microsoftonline.com/${TENANT_ID}/discovery/v2.0/keys`)
-);
-
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Headers': 'Content-Type',
 };
 
 function json(body, status = 200) {
@@ -48,23 +34,6 @@ function json(body, status = 200) {
     status,
     headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
   });
-}
-
-async function verifyToken(request) {
-  const auth = request.headers.get('Authorization') || '';
-  const match = auth.match(/^Bearer (.+)$/);
-  if (!match) return null;
-  try {
-    const { payload } = await jwtVerify(match[1], JWKS, {
-      issuer: `https://login.microsoftonline.com/${TENANT_ID}/v2.0`,
-      audience: CLIENT_ID,
-    });
-    const email = (payload.preferred_username || payload.email || '').toLowerCase();
-    if (!email) return null;
-    return { email, name: payload.name || email };
-  } catch (e) {
-    return null;
-  }
 }
 
 function ghHeaders(env) {
@@ -78,7 +47,7 @@ function ghHeaders(env) {
 async function ghGetFile(path, env) {
   const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`;
   const res = await fetch(url, { headers: ghHeaders(env) });
-  if (res.status === 404) return { sha: null, json: null };
+  if (res.status === 404) return { sha: null, text: null };
   if (!res.ok) throw new Error(`GitHub GET ${path} failed: ${res.status}`);
   const data = await res.json();
   const decoded = atob(data.content.replace(/\n/g, ''));
@@ -128,44 +97,35 @@ export default {
     }
 
     const url = new URL(request.url);
-    const user = await verifyToken(request);
-    if (!user) {
-      return json({ error: 'Sign in with your Innergy Microsoft account required' }, 401);
-    }
 
     try {
-      if (url.pathname === '/links' && request.method === 'GET') {
-        const { data } = await loadLinks(env);
-        return json(data);
-      }
-
       if (url.pathname === '/add' && request.method === 'POST') {
         const body = await request.json().catch(() => null);
-        const { id, label, url: linkUrl } = body || {};
+        const { id, label, url: linkUrl, addedBy } = body || {};
         if (typeof id !== 'string' || !/^[A-J](0[1-9]|1[0-9])$/.test(id)) {
           return json({ error: 'Invalid competency id' }, 400);
         }
         if (typeof linkUrl !== 'string' || !/^https?:\/\/.+/i.test(linkUrl) || linkUrl.length > 500) {
           return json({ error: 'Invalid URL — must start with http:// or https://' }, 400);
         }
+        const safeAddedBy = String(addedBy || 'anonymous').slice(0, 80);
         const { sha, data } = await loadLinks(env);
         data[id] = data[id] || [];
         const entry = {
           entryId: crypto.randomUUID(),
           label: String(label || linkUrl).slice(0, 150),
           url: linkUrl,
-          addedByEmail: user.email,
-          addedByName: user.name,
+          addedBy: safeAddedBy,
           addedAt: new Date().toISOString(),
         };
         data[id].push(entry);
-        await saveLinks(data, sha, `Add link for ${id} (${user.email})`, env);
+        await saveLinks(data, sha, `Add link for ${id} via training matrix page${safeAddedBy !== 'anonymous' ? ` (${safeAddedBy})` : ''}`, env);
         return json({ success: true, entry });
       }
 
       if (url.pathname === '/upload' && request.method === 'POST') {
         const body = await request.json().catch(() => null);
-        const { id, label, filename, contentBase64 } = body || {};
+        const { id, label, filename, contentBase64, addedBy } = body || {};
         if (typeof id !== 'string' || !/^[A-J](0[1-9]|1[0-9])$/.test(id)) {
           return json({ error: 'Invalid competency id' }, 400);
         }
@@ -176,9 +136,10 @@ export default {
         if (approxBytes > MAX_UPLOAD_BYTES) {
           return json({ error: 'File too large — 8MB max' }, 400);
         }
+        const safeAddedBy = String(addedBy || 'anonymous').slice(0, 80);
         const safeName = sanitizeFilename(filename);
         const path = `${UPLOADS_PREFIX}/${id}/${Date.now()}-${safeName}`;
-        await ghPutFile(path, contentBase64, `Upload ${safeName} for ${id} (${user.email})`, null, env);
+        await ghPutFile(path, contentBase64, `Upload ${safeName} for ${id} via training matrix page${safeAddedBy !== 'anonymous' ? ` (${safeAddedBy})` : ''}`, null, env);
 
         const { sha, data } = await loadLinks(env);
         data[id] = data[id] || [];
@@ -188,12 +149,11 @@ export default {
           url: `${PAGES_BASE}/${path}`,
           filePath: path,
           isUpload: true,
-          addedByEmail: user.email,
-          addedByName: user.name,
+          addedBy: safeAddedBy,
           addedAt: new Date().toISOString(),
         };
         data[id].push(entry);
-        await saveLinks(data, sha, `Add uploaded doc for ${id} (${user.email})`, env);
+        await saveLinks(data, sha, `Add uploaded doc for ${id} via training matrix page${safeAddedBy !== 'anonymous' ? ` (${safeAddedBy})` : ''}`, env);
         return json({ success: true, entry });
       }
 
@@ -207,14 +167,11 @@ export default {
         const list = data[id] || [];
         const entry = list.find(e => e.entryId === entryId);
         if (!entry) return json({ error: 'Link not found' }, 404);
-        if (entry.addedByEmail !== user.email) {
-          return json({ error: 'You can only delete links you added' }, 403);
-        }
         data[id] = list.filter(e => e.entryId !== entryId);
-        await saveLinks(data, sha, `Delete link for ${id} (${user.email})`, env);
+        await saveLinks(data, sha, `Delete link for ${id} via training matrix page`, env);
         if (entry.isUpload && entry.filePath) {
           const { sha: fileSha } = await ghGetFile(entry.filePath, env);
-          if (fileSha) await ghDeleteFile(entry.filePath, `Delete uploaded doc for ${id} (${user.email})`, fileSha, env);
+          if (fileSha) await ghDeleteFile(entry.filePath, `Delete uploaded doc for ${id} via training matrix page`, fileSha, env);
         }
         return json({ success: true });
       }

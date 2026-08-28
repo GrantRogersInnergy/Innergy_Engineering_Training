@@ -221,26 +221,14 @@
     .hero{ padding:26px 22px; }
   }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@4.30.0/lib/msal-browser.min.js"></script>
 </head>
 <body>
 
-<div id="signin-gate" style="min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:16px; background:var(--paper); color:var(--ink); text-align:center; padding:24px;">
-  <img src="" alt="INNERGY" id="gateLogo" style="height:36px;">
-  <h1 style="margin:0; font-size:20px;">ENGINEERING Training Matrix</h1>
-  <p style="max-width:420px; color:var(--ink-soft); font-size:14px; line-height:1.6;">Internal use only. Sign in with your Innergy Microsoft account to continue.</p>
-  <button id="signInBtn" style="background:var(--orange); color:#fff; border:none; padding:10px 22px; border-radius:8px; font-weight:700; font-size:14px; cursor:pointer; font-family:inherit;">Sign in with Microsoft</button>
-  <p id="signInError" style="color:#c0392b; font-size:12.5px; max-width:420px; display:none;"></p>
-</div>
-
-<div id="app-root" style="display:none;">
 <div class="topbar">
   <div class="topbar-row">
     <img id="logoImg" src="" alt="INNERGY">
     <div class="topbar-actions">
-      <span id="userChip" class="icon-btn" style="cursor:default;"></span>
       <button class="icon-btn" id="themeToggle">🌙 Dark mode</button>
-      <button class="icon-btn" id="signOutBtn">Sign out</button>
       <button class="menu-toggle" id="menuToggle">Sections ▾</button>
     </div>
   </div>
@@ -367,92 +355,18 @@
   <img id="footerIcon" src="" alt="">
   <div>Internal use only · Compiled from the ENGINEERING &amp; Optimizer Role Guide, Training Matrix V2, the INNERGY Help Center, and peAk. Switch roles above to see the same 76 competencies filtered to what each role owns.</div>
 </footer>
-</div>
 
 <script id="matrix-data" type="application/json">[{"id":"A01","domain":"Product & Business Context","competency":"Millwork and casework manufacturing fundamentals","looks_like":"Can describe how a shop moves a job from drawing to cut part, and name the constraint each product removes.","CSM":"W","ERP_ONB":"W","ONB":"P","PS":"P","SUP":"W","verify":"Verbal teach-back to a peer","links":[]},{"id":"A02","domain":"Product & Business Context","competency":"What ENGINEERING is and the problem it solves","looks_like":"Explains the product to a customer in two minutes without notes and without inventing capabilities.","CSM":"P","ERP_ONB":"P","ONB":"P","PS":"P","SUP":"P","verify":"Teach-back to a peer","links":[]},{"id":"A03","domain":"Product & Business Context","competency":"What the Optimizer is and the problem it solves","looks_like":"Explains yield, per-machine programming, and pre-run validation as the three reasons it exists.","CSM":"P","ERP_ONB":"P","ONB":"P","PS":"P","SUP":"P","verify":"Teach-back to a peer","links":[["Getting Started with the Optimizer","https://support.innergy.com/en/articles/16595935-getting-started-with-the-optimizer"]]},{"id":"A04","domain":"Product & Business Context","competency":"The end-to-end chain and each system's role","looks_like":"Draws ERP \u2192 Takeoff \u2192 ENGINEERING \u2192 Optimizer \u2192 machine from memory, including the return path to the work order.","CSM":"P","ERP_ONB":"P","ONB":"P","PS":"E","SUP":"P","verify":"Whiteboard walkthrough, unprompted","links":[]},{"id":"A05","domain":"Product & Business Context","competency":"The value narrative and business outcomes","looks_like":"Ties each capability to a measurable shop outcome rather than a feature list.","CSM":"E","ERP_ONB":"A","ONB":"W","PS":"W","SUP":"A","verify":"Recorded customer-call review","links":[]},{"id":"A06","domain":"Product & Business Context","competency":"Product boundaries \u2014 what belongs to which system","looks_like":"Given a customer problem, names the system that owns the fix without guessing.","CSM":"P","ERP_ONB":"P","ONB":"P","PS":"P","SUP":"E","verify":"Routing exercise on 10 real tickets","links":[]},{"id":"B01","domain":"ENGINEERING \u2014 Core Workflow","competency":"Open a project from the ERP and read Project Information","looks_like":"Opens a project, confirms the synced project metadata, and knows which fields come from the ERP.","CSM":"W","ERP_ONB":"W","ONB":"P","PS":"P","SUP":"P","verify":"Live demo","links":[]},{"id":"B02","domain":"ENGINEERING \u2014 Core Workflow","competency":"Create a Model Space from a Takeoff plan","looks_like":"Creates a model space with the correct scale and imported locations, and recognizes the missing-scale and snap-point blockers on sight.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"P","SUP":"P","verify":"Live demo from a clean project","links":[["Creating Model Spaces \u2013 NEW","https://support.innergy.com/en/articles/16450660-creating-model-spaces-new"],["Creating Model Spaces","https://support.innergy.com/en/articles/15388769-creating-model-spaces"]]},{"id":"B03","domain":"ENGINEERING \u2014 Core Workflow","competency":"Draw and edit walls, surfaces, joins, and clipping","looks_like":"Builds an accurate wall shell over an underlay, including curved walls and join angles.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"P","SUP":"W","verify":"Timed sandbox exercise","links":[["Placing a Wall in the Model Space","https://support.innergy.com/en/articles/15388786-placing-a-wall-in-the-model-space"]]},{"id":"B04","domain":"ENGINEERING \u2014 Core Workflow","competency":"Assign and manipulate wall surface underlays","looks_like":"Attaches an elevation underlay to a surface, positions and crops it, and saves it.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"W","SUP":"W","verify":"Live demo","links":[]},{"id":"B05","domain":"ENGINEERING \u2014 Core Workflow","competency":"Place products \u2014 library, immediate, extruded, combined","looks_like":"Places products from the library and produces a product by extruding a 2D annotation or combining products.","CSM":"W","ERP_ONB":"W","ONB":"P","PS":"P","SUP":"W","verify":"Timed sandbox exercise","links":[["Placing Products on a Wall","https://support.innergy.com/en/articles/15388797-placing-products-on-a-wall"],["Saving and Updating Products in the Library","https://support.innergy.com/en/articles/15650342-saving-and-updating-products-in-the-library"]]},{"id":"B06","domain":"ENGINEERING \u2014 Core Workflow","competency":"Product properties, dimensions, position, and numbering","looks_like":"Configures a product fully, and explains product-number locking and non-build products.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"P","SUP":"W","verify":"Live demo","links":[["Working with Product Faces","https://support.innergy.com/en/articles/15650287-working-with-product-faces"]]},{"id":"B07","domain":"ENGINEERING \u2014 Core Workflow","competency":"Interior and exterior splits, handing, drawer boxes","looks_like":"Subdivides a product into shelves, doors, and drawer fronts with correct handing and drawer box generation.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"E","SUP":"W","verify":"Sandbox exercise, peer reviewed","links":[["Interior Sectioning","https://support.innergy.com/en/articles/15650299-interior-sectioning"],["Exterior Sectioning","https://support.innergy.com/en/articles/15650322-exterior-sectioning"]]},{"id":"B08","domain":"ENGINEERING \u2014 Core Workflow","competency":"How the Solver works and why it fails","looks_like":"Explains when solving runs, what makes it slow, and the difference between a configuration failure and a geometry failure.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"P","SUP":"P","verify":"Verbal teach-back","links":[]},{"id":"B09","domain":"ENGINEERING \u2014 Core Workflow","competency":"Locations \u2014 import, assign, and group for export","looks_like":"Assigns locations to products and explains their role in shipping and in exporting to the Optimizer.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"W","SUP":"W","verify":"Live demo","links":[]},{"id":"C01","domain":"ENGINEERING \u2014 Libraries & Standards","competency":"Global vs Project scope, and moving objects between them","looks_like":"Chooses the right scope every time, and uses import, snapshot, and export to global deliberately.","CSM":"W","ERP_ONB":"W","ONB":"P","PS":"E","SUP":"P","verify":"Teach-back plus a reviewed config change","links":[["Customizing, Saving, and Updating the Workspace","https://support.innergy.com/en/articles/15388757-customizing-saving-and-updating-the-workspace"]]},{"id":"C02","domain":"ENGINEERING \u2014 Libraries & Standards","competency":"Materials \u2014 properties, project vs global, and the ERP boundary","looks_like":"Completes every field a material needs to solve, and explains why a missing material is an ERP problem.","CSM":"W","ERP_ONB":"W","ONB":"P","PS":"P","SUP":"P","verify":"Configuration review","links":[["Applying ENGINEERING Properties to Materials","https://support.innergy.com/en/articles/15332437-applying-design-properties-to-materials"]]},{"id":"C03","domain":"ENGINEERING \u2014 Libraries & Standards","competency":"Material Editor \u2014 hardware models and attachment points","looks_like":"Loads a hinge, pull, or drawer guide and sets an attachment point that places correctly in 3D.","CSM":"A","ERP_ONB":"A","ONB":"W","PS":"E","SUP":"W","verify":"Configuration review against reference examples","links":[["Defining Connector Materials","https://support.innergy.com/en/articles/15650177-defining-connector-materials"],["Manually Placed Hardware","https://support.innergy.com/en/articles/15650205-manually-placed-hardware"]]},{"id":"C04","domain":"ENGINEERING \u2014 Libraries & Standards","competency":"Schedule Types and Schedule Subtypes","looks_like":"Designs a customer's product taxonomy and knows when a subtype is the right answer instead of a new type.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"E","SUP":"W","verify":"Verbal teach-back plus a design review","links":[["Creating Part Schedules and Using Subtypes","https://support.innergy.com/en/articles/15332319-creating-part-schedules-and-using-subtypes"]]},{"id":"C05","domain":"ENGINEERING \u2014 Libraries & Standards","competency":"Part Types and the Parts Library","looks_like":"Builds a complete part type set per schedule type, including concealed-edge behavior.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"E","SUP":"W","verify":"Configuration review","links":[["Creating Part Schedules and Using Subtypes","https://support.innergy.com/en/articles/15332319-creating-part-schedules-and-using-subtypes"]]},{"id":"C06","domain":"ENGINEERING \u2014 Libraries & Standards","competency":"Joinery Library","looks_like":"Authors dado, dowel, screw, miter, and line-bore joinery with correct drill masks and spacing.","CSM":"\u2014","ERP_ONB":"\u2014","ONB":"W","PS":"E","SUP":"A","verify":"Configuration review with sign-off","links":[["Creating and Managing Joinery Methods","https://support.innergy.com/en/articles/15332415-creating-and-managing-joinery-methods"]]},{"id":"C07","domain":"ENGINEERING \u2014 Libraries & Standards","competency":"Construction Schedules","looks_like":"Builds a schedule that solves clean on the first attempt, with every default part type, reveal, nailer, toe kick, and connector defined.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"E","SUP":"W","verify":"Configuration review with sign-off","links":[["Creating and Updating Construction Schedules","https://support.innergy.com/en/articles/15332381-creating-and-updating-construction-schedules"]]},{"id":"C08","domain":"ENGINEERING \u2014 Libraries & Standards","competency":"Material Schedules","looks_like":"Maps every part type to material and banding, including the by-size table and subtype overrides.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"E","SUP":"W","verify":"Configuration review with sign-off","links":[["Creating and Updating Material Schedules","https://support.innergy.com/en/articles/15332360-creating-and-updating-material-schedules"]]},{"id":"C09","domain":"ENGINEERING \u2014 Libraries & Standards","competency":"CAM operations authored on part faces","looks_like":"Encodes shop-specific machining as routes, dados, line bores, and holes that solve into real operations.","CSM":"\u2014","ERP_ONB":"\u2014","ONB":"W","PS":"E","SUP":"W","verify":"Sandbox exercise plus peer review","links":[["Connector CAM Operations","https://support.innergy.com/en/articles/15650194-connector-cam-operations"]]},{"id":"C10","domain":"ENGINEERING \u2014 Libraries & Standards","competency":"Custom Code, custom properties, and formulas","looks_like":"Writes and debugs code at the correct run stage, and knows when a schedule change is the better answer.","CSM":"A","ERP_ONB":"A","ONB":"A","PS":"E","SUP":"W","verify":"Code review plus peer teach-back","links":[]},{"id":"C11","domain":"ENGINEERING \u2014 Libraries & Standards","competency":"Hatch Library and section hatches","looks_like":"Creates hatches and assigns them to materials so cut views read correctly.","CSM":"\u2014","ERP_ONB":"\u2014","ONB":"W","PS":"P","SUP":"A","verify":"Configuration review","links":[["Working with Hatches","https://support.innergy.com/en/articles/15650281-working-with-hatches"]]},{"id":"D01","domain":"ENGINEERING \u2014 Drawings & Output","competency":"Sheets and title blocks","looks_like":"Sets up a customer's sheet sizes, scales, and title blocks as a reusable standard.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"P","SUP":"W","verify":"Live demo","links":[["Creating a Sheet","https://support.innergy.com/en/articles/15650115-creating-a-sheet"],["Creating / Importing a Title Block","https://support.innergy.com/en/articles/15650147-creating-importing-a-title-block"]]},{"id":"D02","domain":"ENGINEERING \u2014 Drawings & Output","competency":"Live vs static scenes and hidden-line conversion","looks_like":"Chooses the right scene type and explains the hardware fidelity and readiness trade-offs of converting to static.","CSM":"W","ERP_ONB":"W","ONB":"P","PS":"P","SUP":"P","verify":"Live demo plus teach-back","links":[["Creating a Scene","https://support.innergy.com/en/articles/15650154-creating-a-scene"],["Placing Scenes on Sheets","https://support.innergy.com/en/articles/15650157-placing-scenes-on-sheets"]]},{"id":"D03","domain":"ENGINEERING \u2014 Drawings & Output","competency":"Annotation toolset and the Annotations Library","looks_like":"Annotates a sheet efficiently and saves reusable annotation groups.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"P","SUP":"W","verify":"Timed sandbox exercise","links":[["Annotation Mode","https://support.innergy.com/en/articles/15650232-annotation-mode"],["Model Space vs. Sheet Annotations","https://support.innergy.com/en/articles/15650273-model-space-vs-sheet-annotations"]]},{"id":"D04","domain":"ENGINEERING \u2014 Drawings & Output","competency":"Automatic Annotations per schedule type","looks_like":"Configures dimension strings, hinging, and concealed-edge marks so drawings come out consistent unattended.","CSM":"\u2014","ERP_ONB":"\u2014","ONB":"P","PS":"E","SUP":"W","verify":"Configuration review","links":[["Automatic Annotations","https://support.innergy.com/en/articles/15650268-automatic-annotations"]]},{"id":"D05","domain":"ENGINEERING \u2014 Drawings & Output","competency":"Printing sheets and generating reports","looks_like":"Produces combined and separate PDF output and explains the product-number locking a report triggers.","CSM":"W","ERP_ONB":"W","ONB":"P","PS":"P","SUP":"P","verify":"Live demo","links":[["Printing to PDF","https://support.innergy.com/en/articles/15650165-printing-to-pdf"]]},{"id":"D06","domain":"ENGINEERING \u2014 Drawings & Output","competency":"Render modes, saved views, and image export","looks_like":"Produces a presentable render and sets up shared saved views for a team.","CSM":"A","ERP_ONB":"A","ONB":"W","PS":"W","SUP":"A","verify":"Live demo","links":[]},{"id":"E01","domain":"Optimizer \u2014 Core Workflow","competency":"Imports \u2014 lifecycle, status, and payload retrieval","looks_like":"Reads import status correctly and retrieves the payload as the first step of any data question.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"P","SUP":"E","verify":"Live demo","links":[["Sending a Model Space to the Optimizer","https://support.innergy.com/en/articles/16595940-sending-a-model-space-to-the-optimizer"]]},{"id":"E02","domain":"Optimizer \u2014 Core Workflow","competency":"Parts and Materials grids, and imported-value resets","looks_like":"Navigates, filters, and groups the grids, and knows which edits deviate from the import.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"P","SUP":"P","verify":"Timed sandbox exercise","links":[["Reviewing and Editing Parts","https://support.innergy.com/en/articles/16595952-reviewing-and-editing-parts"],["Reviewing and Editing Materials","https://support.innergy.com/en/articles/16595957-reviewing-and-editing-materials"]]},{"id":"E03","domain":"Optimizer \u2014 Core Workflow","competency":"Material setup \u2014 stock, grain, flip, trim, reversibility, offcuts","looks_like":"Configures material so nesting is correct, and explains why a one-sided material splits sheets.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"E","SUP":"P","verify":"Configuration review","links":[["Reviewing and Editing Materials","https://support.innergy.com/en/articles/16595957-reviewing-and-editing-materials"]]},{"id":"E04","domain":"Optimizer \u2014 Core Workflow","competency":"Create an optimization","looks_like":"Selects the right primary and secondary stations, nesting type, rotation, and timeout for the job in front of them.","CSM":"W","ERP_ONB":"W","ONB":"P","PS":"E","SUP":"P","verify":"Live demo","links":[["Running an Optimization","https://support.innergy.com/en/articles/16595966-running-an-optimization"]]},{"id":"E05","domain":"Optimizer \u2014 Core Workflow","competency":"Read and review a nest","looks_like":"Interprets sheets, utilisation, face up or back, and CAM route colors, and spots a bad layout before it reaches a machine.","CSM":"W","ERP_ONB":"W","ONB":"P","PS":"E","SUP":"P","verify":"Live demo plus teach-back","links":[["Reading the Nest Layout","https://support.innergy.com/en/articles/16595972-reading-the-nest-layout"]]},{"id":"E06","domain":"Optimizer \u2014 Core Workflow","competency":"Part and sheet overrides, and nest annotations","looks_like":"Adjusts placements and marks up a sheet, and knows exactly when overrides are blocked.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"P","SUP":"P","verify":"Sandbox exercise","links":[]},{"id":"E07","domain":"Optimizer \u2014 Core Workflow","competency":"Reports and export to the work order","looks_like":"Produces the nest report, part list, and labels, and pushes results back to the ERP.","CSM":"W","ERP_ONB":"W","ONB":"P","PS":"P","SUP":"P","verify":"Live demo","links":[["Generating Machine Code","https://support.innergy.com/en/articles/16595978-generating-machine-code"]]},{"id":"F01","domain":"Optimizer \u2014 Machines & Post Output","competency":"Processing Stations \u2014 types, availability, constraints","looks_like":"Creates and structures a customer's stations to match their real machines, respecting naming limits.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"E","SUP":"P","verify":"Configuration review","links":[["Understanding Processing Station Types","https://support.innergy.com/en/articles/16595962-understanding-processing-station-types"]]},{"id":"F02","domain":"Optimizer \u2014 Machines & Post Output","competency":"Tools, tool sets, multi-pass routers, default border router","looks_like":"Builds a complete, valid tool set for every station and knows the dependencies that break generation.","CSM":"\u2014","ERP_ONB":"\u2014","ONB":"P","PS":"E","SUP":"P","verify":"Configuration review with sign-off","links":[["Generating Machine Code","https://support.innergy.com/en/articles/16595978-generating-machine-code"]]},{"id":"F03","domain":"Optimizer \u2014 Machines & Post Output","competency":"Optimization settings and the yield-versus-labor trade-offs","looks_like":"Tunes a station for a stated business goal and can defend each setting choice out loud.","CSM":"W","ERP_ONB":"W","ONB":"P","PS":"E","SUP":"W","verify":"Scenario exercise with three competing goals","links":[]},{"id":"F04","domain":"Optimizer \u2014 Machines & Post Output","competency":"Small part handling and outline cut options","looks_like":"Selects double pass, onion skin, tabs, or common line cutting appropriately and respects the incompatibilities.","CSM":"\u2014","ERP_ONB":"\u2014","ONB":"W","PS":"E","SUP":"W","verify":"Scenario exercise","links":[]},{"id":"F05","domain":"Optimizer \u2014 Machines & Post Output","competency":"Post processor selection and capability","looks_like":"Picks a post that resolves and is capable for the station type, and recognizes a mismatch immediately.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"E","SUP":"P","verify":"Configuration review","links":[["Generating Machine Code","https://support.innergy.com/en/articles/16595978-generating-machine-code"]]},{"id":"F06","domain":"Optimizer \u2014 Machines & Post Output","competency":"Safety-critical output settings","looks_like":"Sets Z references, units, precision, sheet origin, axis inversion, cut direction, and back-face handling correctly, verified against the physical machine.","CSM":"\u2014","ERP_ONB":"\u2014","ONB":"P","PS":"E","SUP":"W","verify":"Configuration review \u2014 mandatory second-person sign-off","links":[]},{"id":"F07","domain":"Optimizer \u2014 Machines & Post Output","competency":"Custom post processors and custom saw connections","looks_like":"Builds, names, and deploys a custom plugin, and wires the station to it.","CSM":"A","ERP_ONB":"A","ONB":"A","PS":"E","SUP":"A","verify":"Code review plus a successful machine dry run","links":[]},{"id":"F08","domain":"Optimizer \u2014 Machines & Post Output","competency":"Bulk machine setup import and station portability","looks_like":"Bulk-loads an existing machine setup, reviews collisions, and plans for the known portability gaps.","CSM":"\u2014","ERP_ONB":"\u2014","ONB":"P","PS":"E","SUP":"W","verify":"Live demo plus a reviewed migration plan","links":[]},{"id":"F09","domain":"Optimizer \u2014 Machines & Post Output","competency":"Fields and zones, barcode formats, material handling","looks_like":"Configures multi-zone machines and the shop's handling and labeling systems.","CSM":"\u2014","ERP_ONB":"\u2014","ONB":"W","PS":"P","SUP":"A","verify":"Configuration review","links":[]},{"id":"G01","domain":"Integration & Data Flow","competency":"ERP to ENGINEERING sync, and the ERP as master","looks_like":"Explains what syncs, in which direction, and why the fix for missing data is upstream.","CSM":"P","ERP_ONB":"P","ONB":"P","PS":"P","SUP":"E","verify":"Verbal teach-back","links":[]},{"id":"G02","domain":"Integration & Data Flow","competency":"Takeoff to ENGINEERING \u2014 plans, scale, locations","looks_like":"Prepares Takeoff correctly so a model space can be created without rework.","CSM":"W","ERP_ONB":"W","ONB":"P","PS":"P","SUP":"P","verify":"Live demo","links":[["Creating Model Spaces \u2013 NEW","https://support.innergy.com/en/articles/16450660-creating-model-spaces-new"]]},{"id":"G03","domain":"Integration & Data Flow","competency":"ENGINEERING to ERP \u2014 engineering sync of items and BOM","looks_like":"Explains what the push contains and how a customer reconciles it in the ERP.","CSM":"P","ERP_ONB":"P","ONB":"P","PS":"P","SUP":"P","verify":"Verbal teach-back","links":[]},{"id":"G04","domain":"Integration & Data Flow","competency":"ENGINEERING to Optimizer \u2014 export by location","looks_like":"Exports cleanly and explains the permission and re-export behavior.","CSM":"W","ERP_ONB":"W","ONB":"P","PS":"P","SUP":"P","verify":"Live demo","links":[["Sending a Model Space to the Optimizer","https://support.innergy.com/en/articles/16595940-sending-a-model-space-to-the-optimizer"]]},{"id":"G05","domain":"Integration & Data Flow","competency":"Optimizer to ERP \u2014 work order export","looks_like":"Pushes results and explains that it is one-way with no automatic retry.","CSM":"W","ERP_ONB":"W","ONB":"P","PS":"P","SUP":"P","verify":"Verbal teach-back","links":[]},{"id":"H01","domain":"Platform, Licensing & Permissions","competency":"Concurrent seat licensing and eviction behavior","looks_like":"Explains seats, expiration, and why the earliest-connected user is the one disconnected \u2014 without calling it a defect.","CSM":"E","ERP_ONB":"W","ONB":"W","PS":"W","SUP":"P","verify":"Customer-call review \u2014 handles a seat complaint without calling it a defect","links":[]},{"id":"H02","domain":"Platform, Licensing & Permissions","competency":"The permission set and where it is administered","looks_like":"Assigns the right permissions for a customer's team and knows they are administered outside ENGINEERING.","CSM":"P","ERP_ONB":"P","ONB":"P","PS":"P","SUP":"P","verify":"Configuration review","links":[]},{"id":"H03","domain":"Platform, Licensing & Permissions","competency":"Optimizer access dependencies","looks_like":"Names all three prerequisites before troubleshooting an access complaint.","CSM":"P","ERP_ONB":"P","ONB":"P","PS":"P","SUP":"P","verify":"Live scenario \u2014 diagnose a blocked-access complaint unaided","links":[]},{"id":"H04","domain":"Platform, Licensing & Permissions","competency":"Environments, tenants, regions, and node assignment","looks_like":"Determines which environment and node a customer is on, and why that scopes an incident.","CSM":"W","ERP_ONB":"W","ONB":"A","PS":"W","SUP":"E","verify":"Live exercise \u2014 locate a named customer's environment and node","links":[]},{"id":"H05","domain":"Platform, Licensing & Permissions","competency":"Release cadence, feature flags, and version surfaces","looks_like":"Answers \u201cwhen did this change?\u201d using the in-app news and version surfaces rather than guessing.","CSM":"P","ERP_ONB":"W","ONB":"W","PS":"P","SUP":"E","verify":"Live demo","links":[]},{"id":"H06","domain":"Platform, Licensing & Permissions","competency":"Settings, workspaces, and shared saved views","looks_like":"Sets up standard global workspaces and shared views so a team opens the same layout.","CSM":"A","ERP_ONB":"A","ONB":"W","PS":"P","SUP":"W","verify":"Live demo","links":[]},{"id":"I01","domain":"Troubleshooting & Escalation","competency":"Evidence collection standard","looks_like":"Opens every ticket with version and environment detail, the session log or payload, and reproduction steps.","CSM":"W","ERP_ONB":"W","ONB":"P","PS":"P","SUP":"E","verify":"Review of the first 10 tickets they file","links":[]},{"id":"I02","domain":"Troubleshooting & Escalation","competency":"The error surface map across both products","looks_like":"Knows which surface answers which question, and looks there before asking the customer.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"P","SUP":"E","verify":"Ticket review","links":[]},{"id":"I03","domain":"Troubleshooting & Escalation","competency":"Diagnose a product that will not build","looks_like":"Checks schedule defaults at all three levels first, and resolves it without escalating.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"E","SUP":"E","verify":"Ticket review \u2014 five resolved unaided","links":[]},{"id":"I04","domain":"Troubleshooting & Escalation","competency":"Diagnose solver timeouts, size limits, and bad geometry","looks_like":"Distinguishes a hard engine limit from a defect and escalates with the right evidence.","CSM":"A","ERP_ONB":"A","ONB":"W","PS":"P","SUP":"P","verify":"Ticket review","links":[]},{"id":"I05","domain":"Troubleshooting & Escalation","competency":"Diagnose drawing and static scene failures","looks_like":"Recognizes a readiness message as a timing issue, not a bug, and advises correctly.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"P","SUP":"P","verify":"Ticket review","links":[]},{"id":"I06","domain":"Troubleshooting & Escalation","competency":"Diagnose imports and bad upstream part data","looks_like":"Reads a payload, isolates the offending record, and sends the fix upstream.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"P","SUP":"E","verify":"Ticket review \u2014 three payloads diagnosed unaided","links":[]},{"id":"I07","domain":"Troubleshooting & Escalation","competency":"Diagnose machine code generation failures","looks_like":"Works the validation list in order and resolves without trial and error.","CSM":"A","ERP_ONB":"A","ONB":"P","PS":"E","SUP":"E","verify":"Ticket review","links":[]},{"id":"I08","domain":"Troubleshooting & Escalation","competency":"Distinguish known behavior from a defect","looks_like":"Closes expected behavior confidently and with a clear explanation, rather than escalating it.","CSM":"P","ERP_ONB":"A","ONB":"P","PS":"P","SUP":"E","verify":"Ticket review \u2014 five expected-behavior cases closed correctly","links":[]},{"id":"I09","domain":"Troubleshooting & Escalation","competency":"Escalation standard","looks_like":"Escalates the right things immediately, with complete evidence, and never retries blindly on machine-output risk.","CSM":"P","ERP_ONB":"W","ONB":"P","PS":"P","SUP":"E","verify":"Review of every escalation filed in month one","links":[]},{"id":"I10","domain":"Troubleshooting & Escalation","competency":"Session, connection, and multi-user issues","looks_like":"Resolves connection and state issues on first contact and recognizes multi-user races.","CSM":"W","ERP_ONB":"W","ONB":"W","PS":"W","SUP":"E","verify":"Ticket review","links":[]},{"id":"J01","domain":"Customer-Facing Practice","competency":"Accurate expectation setting","looks_like":"Never promises a capability the product does not have, and can recite the known non-capabilities.","CSM":"E","ERP_ONB":"P","ONB":"P","PS":"E","SUP":"P","verify":"Customer-call review","links":[]},{"id":"J02","domain":"Customer-Facing Practice","competency":"Adoption health assessment and intervention","looks_like":"Reads the adoption signals on a live account and proposes a specific intervention.","CSM":"E","ERP_ONB":"\u2014","ONB":"W","PS":"W","SUP":"A","verify":"Account review with a manager","links":[]},{"id":"J03","domain":"Customer-Facing Practice","competency":"Teaching a customer admin to own their standards","looks_like":"Hands over global scope ownership so the customer maintains their own standards afterward.","CSM":"W","ERP_ONB":"W","ONB":"P","PS":"E","SUP":"A","verify":"Observed training session","links":[]},{"id":"J04","domain":"Customer-Facing Practice","competency":"Scoping and sequencing an engagement","looks_like":"Produces a dependency-correct plan with realistic gates, not a feature tour.","CSM":"P","ERP_ONB":"\u2014","ONB":"P","PS":"P","SUP":"A","verify":"Plan review with a manager","links":[]},{"id":"J05","domain":"Customer-Facing Practice","competency":"Run the first-job validation walkthrough","looks_like":"Drives a customer through the full chain to a downloaded machine file and a work-order push.","CSM":"W","ERP_ONB":"W","ONB":"P","PS":"P","SUP":"P","verify":"Observed end-to-end walkthrough","links":[]},{"id":"J06","domain":"Customer-Facing Practice","competency":"Route work to the right team","looks_like":"Routes correctly the first time, with enough context that the receiving team does not have to ask.","CSM":"E","ERP_ONB":"E","ONB":"P","PS":"P","SUP":"E","verify":"Routing exercise plus handoff review","links":[]},{"id":"J07","domain":"Customer-Facing Practice","competency":"Use and explain the feedback and learning channels","looks_like":"Directs customers to the ideas, knowledge base, and training channels and uses them personally.","CSM":"P","ERP_ONB":"P","ONB":"P","PS":"W","SUP":"P","verify":"Live demo","links":[["INNERGY Help Center","https://support.innergy.com/en/collections/19652668-innergy-engineering"]]}]</script>
 <script>
 let MATRIX = JSON.parse(document.getElementById('matrix-data').textContent);
 
-// Server-published links are read and written through the Worker, which
-// verifies every request is a signed-in Innergy Microsoft account before
-// touching links.json in the repo. Anyone's published link shows up for
-// every visitor, not just their own browser.
+// Server-published links live in links.json alongside this page on GitHub Pages.
+// Anyone's published link shows up for every visitor, not just their own browser.
 const LINKS_API_URL = 'https://innergy-training-links.zzqxk7f2p9wj3.workers.dev';
-
-// ---------- Microsoft Entra ID sign-in (Innergy accounts only) ----------
-const MSAL_CLIENT_ID = 'REPLACE_WITH_CLIENT_ID';
-const MSAL_TENANT_ID = 'REPLACE_WITH_TENANT_ID';
-
-const msalInstance = new msal.PublicClientApplication({
-  auth: {
-    clientId: MSAL_CLIENT_ID,
-    authority: `https://login.microsoftonline.com/${MSAL_TENANT_ID}`,
-    redirectUri: window.location.origin + window.location.pathname,
-  },
-  cache: { cacheLocation: 'sessionStorage' },
-});
-const AUTH_SCOPES = ['openid', 'profile', 'email', 'User.Read'];
-let currentAccount = null;
-
-async function getToken(){
-  if (!currentAccount) return null;
-  try{
-    const res = await msalInstance.acquireTokenSilent({ scopes: AUTH_SCOPES, account: currentAccount });
-    return res.idToken;
-  }catch(e){
-    return null;
-  }
-}
-
-function authHeaders(token){
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
-
-function showApp(){
-  document.getElementById('signin-gate').style.display = 'none';
-  document.getElementById('app-root').style.display = '';
-  const chip = document.getElementById('userChip');
-  if (chip) chip.textContent = currentAccount.username || currentAccount.name || '';
-}
-
-function showGate(errorMsg){
-  document.getElementById('signin-gate').style.display = 'flex';
-  document.getElementById('app-root').style.display = 'none';
-  const err = document.getElementById('signInError');
-  if (err) {
-    err.style.display = errorMsg ? 'block' : 'none';
-    err.textContent = errorMsg || '';
-  }
-}
-
-async function ensureSignedIn(){
-  await msalInstance.initialize();
-  const accounts = msalInstance.getAllAccounts();
-  if (accounts.length > 0) {
-    currentAccount = accounts[0];
-    return true;
-  }
-  return false;
-}
-
-document.getElementById('signInBtn').addEventListener('click', async () => {
-  try{
-    const result = await msalInstance.loginPopup({ scopes: AUTH_SCOPES });
-    currentAccount = result.account;
-    await startApp();
-  }catch(e){
-    showGate('Sign-in failed or was cancelled. Please try again.');
-  }
-});
-
-document.getElementById('signOutBtn').addEventListener('click', () => {
-  msalInstance.logoutRedirect({ account: currentAccount });
-});
 
 async function loadPublishedLinks(){
   try{
-    const token = await getToken();
-    const res = await fetch(LINKS_API_URL + '/links', { headers: authHeaders(token), cache: 'no-store' });
+    const res = await fetch('./links.json', { cache: 'no-store' });
     if (!res.ok) return;
     const data = await res.json();
     Object.keys(data).forEach(id => {
@@ -460,8 +374,8 @@ async function loadPublishedLinks(){
       if (!row) return;
       row.links = row.links || [];
       (data[id] || []).forEach(entry => {
-        const already = row.links.some(l => l[4] === entry.entryId);
-        if (!already) row.links.push([entry.label, entry.url, true, entry.entryId, entry.addedByEmail]);
+        const already = row.links.some(l => l[3] === entry.entryId);
+        if (!already) row.links.push([entry.label, entry.url, true, entry.entryId]);
       });
     });
   }catch(e){ /* links.json may not exist yet on first deploy — fine */ }
@@ -540,10 +454,8 @@ function escAttr(s){ return String(s).replace(/"/g,'&quot;'); }
 function renderLearnCell(r, notReq){
   const links = r.links || [];
   const linksHtml = links.map(l => {
-    const [label, url, added, entryId, addedByEmail] = l;
-    const mine = entryId && currentAccount && addedByEmail &&
-      addedByEmail.toLowerCase() === (currentAccount.username || '').toLowerCase();
-    const deleteBtn = mine
+    const [label, url, added, entryId] = l;
+    const deleteBtn = entryId
       ? `<button class="delete-link-btn" title="Delete this link" onclick="deleteLink('${r.id}','${entryId}')">✕</button>`
       : '';
     return `<div class="link-row"><a class="learn-link" href="${url}" target="_blank">${label} ↗</a>${added ? '<span class="added-badge">added</span>' : ''}${deleteBtn}</div>`;
@@ -560,11 +472,12 @@ function renderLearnCell(r, notReq){
       <input type="text" class="link-url-input" placeholder="https://...">
       <div class="upload-divider">— or upload a document instead —</div>
       <input type="file" class="link-file-input">
+      <input type="text" class="link-name-input" placeholder="Your name (optional)">
       <div class="add-link-actions">
         <button class="link-save-btn" onclick="publishLink('${r.id}')">Publish link</button>
         <button class="link-cancel-btn" onclick="cancelAddForm('${r.id}')">Cancel</button>
       </div>
-      <div class="form-hint">Publishes instantly for everyone who visits this page, tagged with your Innergy account. <a href="#" onclick="suggestViaGithub('${r.id}');return false;">Prefer a GitHub issue instead?</a></div>
+      <div class="form-hint">Publishes instantly for everyone who visits this page — no download or re-upload needed. <a href="#" onclick="suggestViaGithub('${r.id}');return false;">Prefer a GitHub issue instead?</a></div>
     </div>`;
   return `<div class="learn-links" data-id="${r.id}">${linksHtml}${emptyNote}${addUi}</div>`;
 }
@@ -666,6 +579,7 @@ window.saveAddForm = window.publishLink = async function(id){
   const url = form.querySelector('.link-url-input').value.trim();
   const fileInput = form.querySelector('.link-file-input');
   const file = fileInput && fileInput.files && fileInput.files[0];
+  const addedBy = form.querySelector('.link-name-input').value.trim();
 
   if (!url && !file) {
     alert('Enter a link starting with http:// or https://, or choose a file to upload.');
@@ -673,12 +587,6 @@ window.saveAddForm = window.publishLink = async function(id){
   }
   if (url && !/^https?:\/\/.+/i.test(url)) {
     alert('Please enter a link starting with http:// or https://');
-    return;
-  }
-
-  const token = await getToken();
-  if (!token) {
-    alert('Your sign-in has expired. Please refresh the page and sign in again.');
     return;
   }
 
@@ -692,14 +600,14 @@ window.saveAddForm = window.publishLink = async function(id){
       const contentBase64 = await fileToBase64(file);
       res = await fetch(LINKS_API_URL + '/upload', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
-        body: JSON.stringify({ id, label: label || file.name, filename: file.name, contentBase64 }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, label: label || file.name, filename: file.name, contentBase64, addedBy }),
       });
     } else {
       res = await fetch(LINKS_API_URL + '/add', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
-        body: JSON.stringify({ id, label: label || url, url }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, label: label || url, url, addedBy }),
       });
     }
     if (!res.ok) {
@@ -710,7 +618,7 @@ window.saveAddForm = window.publishLink = async function(id){
     const row = MATRIX.find(r => r.id === id);
     if (row && entry) {
       row.links = row.links || [];
-      row.links.push([entry.label, entry.url, true, entry.entryId, entry.addedByEmail]);
+      row.links.push([entry.label, entry.url, true, entry.entryId]);
     }
     renderDomains();
   } catch (e) {
@@ -722,15 +630,10 @@ window.saveAddForm = window.publishLink = async function(id){
 
 window.deleteLink = async function(id, entryId){
   if (!confirm('Delete this link?')) return;
-  const token = await getToken();
-  if (!token) {
-    alert('Your sign-in has expired. Please refresh the page and sign in again.');
-    return;
-  }
   try {
     const res = await fetch(LINKS_API_URL + '/delete', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, entryId }),
     });
     if (!res.ok) {
@@ -783,20 +686,10 @@ document.getElementById('themeToggle').addEventListener('click', () => {
 });
 
 // ---------- Startup ----------
-async function startApp(){
-  showApp();
+(async function start(){
   renderAll();          // render immediately with the built-in curated links
   await loadPublishedLinks();  // then fetch anything the team has published
   renderDomains();       // re-render with published links merged in
-}
-
-(async function start(){
-  const signedIn = await ensureSignedIn();
-  if (signedIn) {
-    await startApp();
-  } else {
-    showGate();
-  }
 })();
 </script>
 

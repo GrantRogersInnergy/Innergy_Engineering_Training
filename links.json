@@ -9,5 +9,13 @@
       "addedAt": "2026-09-01T14:48:00.717Z"
     }
   ],
-  "J01": []
+  "J01": [
+    {
+      "entryId": "56644763-0176-4f9d-a44e-247beca6a04f",
+      "label": "__deltest__",
+      "url": "https://example.com/deltest",
+      "addedBy": "anonymous",
+      "addedAt": "2026-09-01T14:56:14.993Z"
+    }
+  ]
 }

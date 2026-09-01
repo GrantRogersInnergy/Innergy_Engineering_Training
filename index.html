@@ -396,20 +396,88 @@ let MATRIX = JSON.parse(document.getElementById('matrix-data').textContent);
 // Anyone's published link shows up for every visitor, not just their own browser.
 const LINKS_API_URL = 'https://innergy-training-links.zzqxk7f2p9wj3.workers.dev';
 
+// ---------- Recent-change reconciliation ----------
+// A write commits to the repo instantly, but GitHub Pages takes ~30s to
+// redeploy links.json/notes.json. Someone who deletes an entry and refreshes
+// straight away would otherwise be served the pre-delete file and see the
+// entry come back, which reads as "delete didn't work". Remember this
+// browser's own recent changes and apply them over whatever the file says,
+// until the file catches up.
+const PENDING_KEY = 'skillmap-pending-ops';
+const PENDING_TTL_MS = 15 * 60 * 1000;
+
+function loadPending(){
+  try{
+    const raw = sessionStorage.getItem(PENDING_KEY);
+    const p = raw ? JSON.parse(raw) : {};
+    const now = Date.now();
+    p.deleted = p.deleted || {};
+    p.added = p.added || {};
+    Object.keys(p.deleted).forEach(k => { if (now - (p.deleted[k].ts || 0) > PENDING_TTL_MS) delete p.deleted[k]; });
+    Object.keys(p.added).forEach(k => { if (now - (p.added[k].ts || 0) > PENDING_TTL_MS) delete p.added[k]; });
+    return p;
+  }catch(e){ return { deleted: {}, added: {} }; }
+}
+
+function savePending(p){
+  try{ sessionStorage.setItem(PENDING_KEY, JSON.stringify(p)); }catch(e){ /* private mode — reconciliation is best-effort */ }
+}
+
+function markDeleted(kind, entryId){
+  const p = loadPending();
+  p.deleted[entryId] = { ts: Date.now(), kind };
+  delete p.added[entryId];
+  savePending(p);
+}
+
+function markAdded(kind, entry, id){
+  const p = loadPending();
+  p.added[entry.entryId] = { ts: Date.now(), kind, id, entry };
+  savePending(p);
+}
+
+// Once the published file agrees with us, stop overriding it.
+function reconcilePending(kind, seenIds){
+  const p = loadPending();
+  let changed = false;
+  Object.keys(p.added).forEach(k => {
+    if (p.added[k].kind === kind && seenIds.has(k)) { delete p.added[k]; changed = true; }
+  });
+  Object.keys(p.deleted).forEach(k => {
+    if (p.deleted[k].kind === kind && !seenIds.has(k)) { delete p.deleted[k]; changed = true; }
+  });
+  if (changed) savePending(p);
+}
+
 async function loadPublishedLinks(){
   try{
     const res = await fetch('./links.json', { cache: 'no-store' });
     if (!res.ok) return;
     const data = await res.json();
+    const pending = loadPending();
+    const seen = new Set();
     Object.keys(data).forEach(id => {
       const row = MATRIX.find(r => r.id === id);
       if (!row) return;
       row.links = row.links || [];
       (data[id] || []).forEach(entry => {
+        seen.add(entry.entryId);
+        if (pending.deleted[entry.entryId]) return;   // deleted here; file has not caught up
         const already = row.links.some(l => l[3] === entry.entryId);
         if (!already) row.links.push([entry.label, entry.url, true, entry.entryId]);
       });
     });
+    // Links added here that the published file does not show yet.
+    Object.values(pending.added).forEach(rec => {
+      if (rec.kind !== 'link' || seen.has(rec.entry.entryId)) return;
+      const row = MATRIX.find(r => r.id === rec.id);
+      if (!row) return;
+      row.links = row.links || [];
+      if (!row.links.some(l => l[3] === rec.entry.entryId)) {
+        row.links.push([rec.entry.label, rec.entry.url, true, rec.entry.entryId]);
+      }
+    });
+    reconcilePending('link', seen);
   }catch(e){ /* links.json may not exist yet on first deploy — fine */ }
 }
 
@@ -420,7 +488,15 @@ async function loadNotes(){
   try{
     const res = await fetch('./notes.json', { cache: 'no-store' });
     if (!res.ok) return;
-    NOTES = await res.json();
+    const data = await res.json();
+    const pending = loadPending();
+    const seen = new Set(data.map(n => n.entryId));
+    NOTES = data.filter(n => !pending.deleted[n.entryId]);
+    Object.values(pending.added).forEach(rec => {
+      if (rec.kind !== 'note' || seen.has(rec.entry.entryId)) return;
+      NOTES.push(rec.entry);
+    });
+    reconcilePending('note', seen);
   }catch(e){ /* notes.json may not exist yet — fine */ }
 }
 
@@ -466,6 +542,7 @@ window.addNote = async function(){
     }
     const { entry, commit } = await res.json();
     if (!commit) throw new Error('the publishing service accepted it but did not save it to the repository');
+    markAdded('note', entry);
     NOTES.push(entry);
     input.value = '';
     renderNotes();
@@ -488,6 +565,7 @@ window.deleteNote = async function(entryId){
       const body = await res.json().catch(() => ({}));
       throw new Error(body.error || ('Request failed: ' + res.status));
     }
+    markDeleted('note', entryId);
     NOTES = NOTES.filter(n => n.entryId !== entryId);
     renderNotes();
   } catch (e) {
@@ -804,6 +882,7 @@ window.saveAddForm = window.publishLink = async function(id){
     if (row && entry) {
       row.links = row.links || [];
       row.links.push([entry.label, entry.url, true, entry.entryId]);
+      markAdded('link', entry, id);
       if (entry.isUpload) trackUpload(entry);
     }
     renderDomains();
@@ -826,6 +905,7 @@ window.deleteLink = async function(id, entryId){
       const body = await res.json().catch(() => ({}));
       throw new Error(body.error || ('Request failed: ' + res.status));
     }
+    markDeleted('link', entryId);
     const row = MATRIX.find(r => r.id === id);
     if (row) row.links = (row.links || []).filter(l => l[3] !== entryId);
     renderDomains();

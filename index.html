@@ -172,6 +172,14 @@
 
   .link-row{ display:flex; align-items:center; gap:6px; margin-bottom:3px; flex-wrap:wrap; }
   .added-badge{ font-size:9px; background:#2FA35D; color:#fff; padding:1px 6px; border-radius:8px; text-transform:uppercase; letter-spacing:0.04em; font-weight:700; }
+  .publish-badge{ font-size:9px; padding:1px 6px; border-radius:8px; text-transform:uppercase; letter-spacing:0.04em; font-weight:700; color:#fff; display:inline-flex; align-items:center; gap:4px; }
+  .publish-badge.pending{ background:#C0392B; }
+  .publish-badge.ready{ background:#2FA35D; }
+  .publish-badge.slow{ background:#B8791B; }
+  .publish-badge .dot{ width:5px; height:5px; border-radius:50%; background:#fff; }
+  .publish-badge.pending .dot{ animation:pulse 1s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.25; } }
+  .learn-link.not-ready{ opacity:0.55; }
   .add-link-btn{
     background:none; border:1px dashed var(--line); color:var(--ink-soft); font-size:11px;
     padding:3px 9px; border-radius:14px; cursor:pointer; margin-top:4px; font-family:inherit;
@@ -559,6 +567,67 @@ function renderHeroStats(){
 
 function escAttr(s){ return String(s).replace(/"/g,'&quot;'); }
 
+// ---------- Upload availability ----------
+// An upload is committed to the repo instantly, but GitHub Pages has to
+// redeploy before the file is actually openable. Rather than guess at a
+// duration, poll the real URL and only go green once it genuinely serves.
+const UPLOAD_STATUS = {};   // entryId -> { state, since, url }
+const UPLOAD_TIMEOUT_MS = 4 * 60 * 1000;
+const UPLOAD_POLL_MS = 3000;
+
+function uploadBadgeHtml(st){
+  if (st.state === 'ready') return '<span class="publish-badge ready"><span class="dot"></span>ready to open</span>';
+  const secs = Math.max(0, Math.round((Date.now() - st.since) / 1000));
+  if (st.state === 'slow') return `<span class="publish-badge slow" title="Still not served after ${secs}s. It is safely saved — try again shortly.">taking longer than usual</span>`;
+  return `<span class="publish-badge pending" title="Saved to the repository. Waiting for GitHub Pages to redeploy before it can be opened."><span class="dot"></span>publishing… ${secs}s</span>`;
+}
+
+// Repaint just the badges, so the ticking counter does not rebuild the table
+// (which would collapse any open add-link form the user is typing into).
+function refreshUploadBadges(){
+  Object.keys(UPLOAD_STATUS).forEach(entryId => {
+    const st = UPLOAD_STATUS[entryId];
+    document.querySelectorAll(`[data-entry-badge="${entryId}"]`).forEach(el => {
+      el.innerHTML = uploadBadgeHtml(st);
+      const row = el.closest('.link-row');
+      const a = row && row.querySelector('a.learn-link');
+      if (a) a.classList.toggle('not-ready', st.state !== 'ready');
+    });
+  });
+}
+
+async function isServed(url){
+  try{
+    const res = await fetch(url + (url.includes('?') ? '&' : '?') + 'cb=' + Date.now(), { cache: 'no-store' });
+    return res.ok;
+  }catch(e){ return false; }
+}
+
+function trackUpload(entry){
+  if (!entry || !entry.entryId || !entry.url) return;
+  if (UPLOAD_STATUS[entry.entryId]) return;
+  UPLOAD_STATUS[entry.entryId] = { state: 'pending', since: Date.now(), url: entry.url };
+  renderDomains();
+
+  const tick = setInterval(refreshUploadBadges, 1000);
+  const poll = setInterval(async () => {
+    const st = UPLOAD_STATUS[entry.entryId];
+    if (!st) { clearInterval(poll); clearInterval(tick); return; }
+    if (await isServed(entry.url)) {
+      st.state = 'ready';
+      clearInterval(poll); clearInterval(tick);
+      refreshUploadBadges();
+      return;
+    }
+    if (Date.now() - st.since > UPLOAD_TIMEOUT_MS) {
+      st.state = 'slow';
+      clearInterval(poll); clearInterval(tick);
+      refreshUploadBadges();
+    }
+  }, UPLOAD_POLL_MS);
+}
+
+
 function renderLearnCell(r, notReq){
   const links = r.links || [];
   const linksHtml = links.map(l => {
@@ -566,7 +635,12 @@ function renderLearnCell(r, notReq){
     const deleteBtn = entryId
       ? `<button class="delete-link-btn" title="Delete this link" onclick="deleteLink('${r.id}','${entryId}')">✕</button>`
       : '';
-    return `<div class="link-row"><a class="learn-link" href="${url}" target="_blank">${label} ↗</a>${added ? '<span class="added-badge">added</span>' : ''}${deleteBtn}</div>`;
+    const st = entryId ? UPLOAD_STATUS[entryId] : null;
+    const badge = st
+      ? `<span data-entry-badge="${entryId}">${uploadBadgeHtml(st)}</span>`
+      : (added ? '<span class="added-badge">added</span>' : '');
+    const notReady = st && st.state !== 'ready' ? ' not-ready' : '';
+    return `<div class="link-row"><a class="learn-link${notReady}" href="${url}" target="_blank">${label} ↗</a>${badge}${deleteBtn}</div>`;
   }).join('');
   const emptyNote = links.length === 0
     ? (notReq
@@ -730,6 +804,7 @@ window.saveAddForm = window.publishLink = async function(id){
     if (row && entry) {
       row.links = row.links || [];
       row.links.push([entry.label, entry.url, true, entry.entryId]);
+      if (entry.isUpload) trackUpload(entry);
     }
     renderDomains();
   } catch (e) {

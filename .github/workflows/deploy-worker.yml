@@ -1,0 +1,67 @@
+# Deploys the innergy-training-links Worker to Cloudflare.
+#
+# The Worker is the only write path for the training matrix page: it holds the
+# GitHub token and commits links, notes and uploads into this repo. When it is
+# not deployed from this directory, writes silently go nowhere (see
+# worker/README.md).
+#
+# Two repository secrets are required, both set under
+# Settings -> Secrets and variables -> Actions:
+#
+#   CLOUDFLARE_API_TOKEN  Cloudflare token with the "Edit Cloudflare Workers"
+#                         template, for the account owning this Worker.
+#   GH_CONTENTS_TOKEN     GitHub fine-grained PAT scoped to this repo only,
+#                         Contents: Read and write. Uploaded as the Worker's
+#                         GITHUB_TOKEN secret.
+#
+# The built-in secrets.GITHUB_TOKEN cannot be used for GH_CONTENTS_TOKEN: it is
+# scoped to a single workflow run and expires when the run ends, so the Worker
+# would start failing minutes after deploy.
+
+name: Deploy Worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'worker/**'
+      - '.github/workflows/deploy-worker.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Deploy to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: worker
+          # Uploads the Worker's GITHUB_TOKEN secret from the env below, so the
+          # deployed build always carries a token that can write to this repo.
+          secrets: |
+            GITHUB_TOKEN
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_CONTENTS_TOKEN }}
+
+      - name: Verify the deploy can reach the repo
+        run: |
+          echo "Waiting for the new build to become live..."
+          sleep 10
+          body=$(curl -sS --max-time 30 https://innergy-training-links.zzqxk7f2p9wj3.workers.dev/health)
+          echo "$body"
+          echo "$body" | grep -q '"ok":true' || {
+            echo "::error::/health did not report ok:true — the Worker is deployed but cannot write to the repo. Check GH_CONTENTS_TOKEN."
+            exit 1
+          }
+          echo "$body" | grep -q '"build":"commits-to-github-v2"' || {
+            echo "::error::/health reports a different build — something else is deployed over this Worker."
+            exit 1
+          }
+          echo "Worker is live and can write to the repo."

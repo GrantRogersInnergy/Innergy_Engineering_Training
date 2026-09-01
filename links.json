@@ -1,3 +1,12 @@
 {
-  "A01": []
+  "A01": [],
+  "A05": [
+    {
+      "entryId": "14252ef5-2a73-4940-883f-2bac06fba59c",
+      "label": "https://www.google.com",
+      "url": "https://www.google.com",
+      "addedBy": "anonymous",
+      "addedAt": "2026-09-01T14:48:00.717Z"
+    }
+  ]
 }

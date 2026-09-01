@@ -1,13 +1,3 @@
 {
-  "A01": [
-    {
-      "entryId": "ddfcd18b-a9bf-4a7b-8596-06a492cc1234",
-      "label": "__e2e_upload_delete_me__",
-      "url": "https://grantrogersinnergy.github.io/Innergy_Engineering_Training/uploads/A01/1788273061505-e2e-test.txt",
-      "filePath": "uploads/A01/1788273061505-e2e-test.txt",
-      "isUpload": true,
-      "addedBy": "claude-e2e",
-      "addedAt": "2026-09-01T14:31:02.585Z"
-    }
-  ]
+  "A01": []
 }

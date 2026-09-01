@@ -19,8 +19,24 @@ their Pages URL, so anyone who opens the page can open them. No login.
 
 ## Deploying
 
-Needs a GitHub fine-grained PAT scoped to **this repo only**, with
-**Contents: Read and write**.
+### From GitHub (no local setup)
+
+Set two repository secrets under **Settings -> Secrets and variables -> Actions**:
+
+| Secret                 | What it is                                                                 |
+|------------------------|----------------------------------------------------------------------------|
+| `CLOUDFLARE_API_TOKEN` | Cloudflare token, "Edit Cloudflare Workers" template, for the account that owns this Worker |
+| `GH_CONTENTS_TOKEN`    | GitHub fine-grained PAT scoped to **this repo only**, **Contents: Read and write** |
+
+Then run **Actions -> Deploy Worker -> Run workflow**. It deploys `worker/`,
+uploads `GH_CONTENTS_TOKEN` as the Worker's `GITHUB_TOKEN` secret, and fails the
+run if `/health` does not come back `ok:true` on the expected build. After that,
+any push to `main` touching `worker/` redeploys automatically.
+
+Do not use the built-in `secrets.GITHUB_TOKEN` for `GH_CONTENTS_TOKEN` — it
+expires when the workflow run ends, so the Worker would break minutes later.
+
+### From a terminal
 
 ```
 cd worker

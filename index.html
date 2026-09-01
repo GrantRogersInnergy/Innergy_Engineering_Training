@@ -221,6 +221,7 @@
 
   .callout{ background:var(--card); border:1px solid var(--line); border-left:4px solid var(--orange); border-radius:10px; padding:16px 20px; font-size:13.5px; line-height:1.6; color:var(--ink); margin-top:16px; }
   .callout strong{ color:var(--dark); }
+  .callout-down{ border-left-color:#c0392b; }
   .callout.dark{ background:var(--dark); color:#eceaf5; border-left-color:var(--tint-fg); }
   .callout.dark strong{ color:#fff; }
   .callout.dark a{ color:#ffb199; }
@@ -310,6 +311,9 @@
           <p id="heroSub">What each role owns across ENGINEERING &amp; Optimizer, cross-referenced against the live INNERGY Help Center and peAk course catalog.</p>
         </div>
         <div class="stat-row" id="statRow"></div>
+      </div>
+      <div class="callout callout-down" id="publishDown" style="display:none;">
+        <strong>Publishing is currently unavailable.</strong> You can read everything on this page as normal, but new links, documents and notes will not save. This has been reported — please don't re-type anything until the banner clears.
       </div>
       <div class="callout">
         <strong>Missing a resource?</strong> Click "+ add link or document" next to any competency, fill it in, and hit "Publish link" — it's saved to the shared page instantly and everyone who opens this URL will see it, no download or re-upload needed.
@@ -452,12 +456,13 @@ window.addNote = async function(){
       const body = await res.json().catch(() => ({}));
       throw new Error(body.error || ('Request failed: ' + res.status));
     }
-    const { entry } = await res.json();
+    const { entry, commit } = await res.json();
+    if (!commit) throw new Error('the publishing service accepted it but did not save it to the repository');
     NOTES.push(entry);
     input.value = '';
     renderNotes();
   } catch (e) {
-    alert('Could not add note right now (' + e.message + ').');
+    alert('Note not saved — ' + e.message + '.\n\nNothing was saved, so please don\'t rely on it being there. Tell Grant if this keeps happening.');
   } finally {
     btn.disabled = false;
   }
@@ -719,7 +724,8 @@ window.saveAddForm = window.publishLink = async function(id){
       const body = await res.json().catch(() => ({}));
       throw new Error(body.error || ('Request failed: ' + res.status));
     }
-    const { entry } = await res.json();
+    const { entry, commit } = await res.json();
+    if (!commit) throw new Error('the publishing service accepted it but did not save it to the repository');
     const row = MATRIX.find(r => r.id === id);
     if (row && entry) {
       row.links = row.links || [];
@@ -727,7 +733,7 @@ window.saveAddForm = window.publishLink = async function(id){
     }
     renderDomains();
   } catch (e) {
-    alert('Could not publish right now (' + e.message + '). You can try again in a moment, or use "Suggest a GitHub issue" instead.');
+    alert('Not published — ' + e.message + '.\n\nNothing was saved, so please don\'t rely on it being there. Tell Grant if this keeps happening.');
     saveBtn.disabled = false;
     saveBtn.textContent = originalText;
   }
@@ -770,6 +776,18 @@ document.getElementById('themeToggle').addEventListener('click', () => {
 });
 
 // ---------- Startup ----------
+// The Worker is the only write path. If it can't reach the repo, say so up
+// front rather than accepting notes and links that silently go nowhere.
+async function checkPublishing(){
+  try{
+    const res = await fetch(LINKS_API_URL + '/health', { cache: 'no-store' });
+    const body = await res.json().catch(() => ({}));
+    if (res.ok && body.ok) return;
+  }catch(e){ /* fall through to the banner */ }
+  const el = document.getElementById('publishDown');
+  if (el) el.style.display = 'block';
+}
+
 (async function start(){
   renderAll();          // render immediately with the built-in curated links
   renderNotes();
@@ -777,6 +795,7 @@ document.getElementById('themeToggle').addEventListener('click', () => {
   await loadNotes();
   renderDomains();       // re-render with published links merged in
   renderNotes();
+  checkPublishing();
 })();
 </script>
 

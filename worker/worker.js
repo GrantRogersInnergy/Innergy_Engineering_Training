@@ -19,6 +19,7 @@
  * Contents: Read and write)
  */
 
+const BUILD = 'commits-to-github-v2';
 const OWNER = 'GrantRogersInnergy';
 const REPO = 'Innergy_Engineering_Training';
 const FILE_PATH = 'links.json';
@@ -71,11 +72,12 @@ async function ghPutFile(path, contentBase64, message, sha, env) {
 
 async function ghDeleteFile(path, message, sha, env) {
   const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`;
-  await fetch(url, {
+  const res = await fetch(url, {
     method: 'DELETE',
     headers: { ...ghHeaders(env), 'Content-Type': 'application/json' },
     body: JSON.stringify({ message, sha }),
   });
+  if (!res.ok) throw new Error(`GitHub DELETE ${path} failed: ${res.status}`);
 }
 
 async function loadLinks(env) {
@@ -87,7 +89,8 @@ async function loadLinks(env) {
 
 async function saveLinks(data, sha, message, env) {
   const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-  return ghPutFile(FILE_PATH, content, message, sha, env);
+  const res = await ghPutFile(FILE_PATH, content, message, sha, env);
+  return res && res.commit && res.commit.sha;
 }
 
 async function loadNotes(env) {
@@ -99,7 +102,8 @@ async function loadNotes(env) {
 
 async function saveNotes(data, sha, message, env) {
   const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-  return ghPutFile(NOTES_FILE_PATH, content, message, sha, env);
+  const res = await ghPutFile(NOTES_FILE_PATH, content, message, sha, env);
+  return res && res.commit && res.commit.sha;
 }
 
 function sanitizeFilename(name) {
@@ -115,6 +119,26 @@ export default {
     const url = new URL(request.url);
 
     try {
+      // A deploy whose token has expired answers every write with success
+      // while nothing reaches the repo. Check the token directly.
+      if (url.pathname === '/health') {
+        if (!env.GITHUB_TOKEN) {
+          return json({ ok: false, error: 'GITHUB_TOKEN secret is not set on this Worker' }, 500);
+        }
+        const probe = await fetch(
+          `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`,
+          { headers: ghHeaders(env) }
+        );
+        if (!probe.ok) {
+          return json({
+            ok: false,
+            error: `GitHub rejected the token: ${probe.status}`,
+            hint: 'Issue a new fine-grained PAT scoped to this repo with Contents: Read and write, then re-run `wrangler secret put GITHUB_TOKEN` and `wrangler deploy`.',
+          }, 500);
+        }
+        return json({ ok: true, build: BUILD, repo: `${OWNER}/${REPO}`, pagesBase: PAGES_BASE });
+      }
+
       if (url.pathname === '/add' && request.method === 'POST') {
         const body = await request.json().catch(() => null);
         const { id, label, url: linkUrl, addedBy } = body || {};
@@ -135,8 +159,8 @@ export default {
           addedAt: new Date().toISOString(),
         };
         data[id].push(entry);
-        await saveLinks(data, sha, `Add link for ${id} via training matrix page${safeAddedBy !== 'anonymous' ? ` (${safeAddedBy})` : ''}`, env);
-        return json({ success: true, entry });
+        const commit = await saveLinks(data, sha, `Add link for ${id} via training matrix page${safeAddedBy !== 'anonymous' ? ` (${safeAddedBy})` : ''}`, env);
+        return json({ success: true, entry, commit });
       }
 
       if (url.pathname === '/upload' && request.method === 'POST') {
@@ -169,8 +193,8 @@ export default {
           addedAt: new Date().toISOString(),
         };
         data[id].push(entry);
-        await saveLinks(data, sha, `Add uploaded doc for ${id} via training matrix page${safeAddedBy !== 'anonymous' ? ` (${safeAddedBy})` : ''}`, env);
-        return json({ success: true, entry });
+        const commit = await saveLinks(data, sha, `Add uploaded doc for ${id} via training matrix page${safeAddedBy !== 'anonymous' ? ` (${safeAddedBy})` : ''}`, env);
+        return json({ success: true, entry, commit });
       }
 
       if (url.pathname === '/delete' && request.method === 'POST') {
@@ -207,8 +231,8 @@ export default {
           addedAt: new Date().toISOString(),
         };
         data.push(entry);
-        await saveNotes(data, sha, `Add note via training matrix page${safeAddedBy !== 'anonymous' ? ` (${safeAddedBy})` : ''}`, env);
-        return json({ success: true, entry });
+        const commit = await saveNotes(data, sha, `Add note via training matrix page${safeAddedBy !== 'anonymous' ? ` (${safeAddedBy})` : ''}`, env);
+        return json({ success: true, entry, commit });
       }
 
       if (url.pathname === '/notes/delete' && request.method === 'POST') {

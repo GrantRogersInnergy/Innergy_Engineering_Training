@@ -8,5 +8,14 @@
       "addedBy": "anonymous",
       "addedAt": "2026-09-01T14:48:00.717Z"
     }
+  ],
+  "J01": [
+    {
+      "entryId": "3966d443-da87-462b-97ea-f8b9987fdaca",
+      "label": "__deltest__",
+      "url": "https://example.com/deltest",
+      "addedBy": "anonymous",
+      "addedAt": "2026-09-01T14:50:37.813Z"
+    }
   ]
 }
